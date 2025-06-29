@@ -1,0 +1,17 @@
+[package]
+name = "corpus_dispersion"
+version = "0.1.0"
+edition = "2021"
+authors = ["Haobo Zhang <chaunice@163.com>"]
+description = "A high-performance Python extension (wheel) for advanced lexical dispersion metrics, powered by Rust and PyO3."
+license = "MIT"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "corpus_dispersion"
+crate-type = ["cdylib"]
+
+[dependencies]
+numpy = "0.25.0"
+pyo3 = { version = "0.25.1", features = ["extension-module", "abi3-py38"] }
+rayon = "1.8"
