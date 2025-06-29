@@ -14,6 +14,12 @@ A high-performance Python extension (wheel) for advanced lexical dispersion metr
 ## Installation
 
 ```bash
+pip install corpus_dispersion
+```
+
+or if you want to install from the built wheel:
+
+```bash
 pip install corpus_dispersion-*.whl
 ```
 
