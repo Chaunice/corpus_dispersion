@@ -145,7 +145,7 @@ results = corpus_dispersion.CorpusWordAnalyzer.calculate_batch_metrics(
 
 This package implements the main dispersion metrics as described in:
 
-- Gries, S. Th. (2020). Analyzing Dispersion. In: A Practical Handbook of Corpus Linguistics.
+- Th. Gries, S. (2021). Analyzing dispersion. In A practical handbook of corpus linguistics (pp. 99-118). Cham: Springer International Publishing.
 - Egbert, J., & Burch, B. (2023). Which words matter most? Operationalizing lexical prevalence for rank-ordered word lists. Applied Linguistics, 44(1), 103–126. <https://doi.org/10.1093/applin/amac030>
 - Carroll (1970), Juilland et al. (1970), Rosengren (1971), Biber et al. (2016), etc.
 
