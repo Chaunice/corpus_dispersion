@@ -135,7 +135,7 @@ results = corpus_dispersion.CorpusWordAnalyzer.calculate_batch_metrics(
 
 - `PyValueError`: Raised when input parameters are invalid.
 
-## Academic Note
+## References
 
 This package implements the main dispersion metrics as described in:
 
