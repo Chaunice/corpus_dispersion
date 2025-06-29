@@ -201,6 +201,15 @@ jobs:
         uses: actions/attest-build-provenance@v2
         with:
           subject-path: 'wheels-*/*'
+      - name: Upload wheels to GitHub Release
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            wheels-*/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Publish to PyPI
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         uses: PyO3/maturin-action@v1
