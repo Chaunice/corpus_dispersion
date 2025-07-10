@@ -43,8 +43,51 @@ pub struct DispersionMetrics {
 impl DispersionMetrics {
     fn __repr__(&self) -> String {
         format!(
-            "DispersionMetrics(range={}, juilland_d={:.3?}, carroll_d2={:.3?}, ...)",
-            self.range, self.juilland_d, self.carroll_d2
+            concat!(
+                "DispersionMetrics(",
+                "range={}, ",
+                "sd_population={}, ",
+                "vc_population={}, ",
+                "juilland_d={}, ",
+                "carroll_d2={}, ",
+                "roschengren_s_adj={}, ",
+                "dp={}, ",
+                "dp_norm={}, ",
+                "kl_divergence={}, ",
+                "jsd_dispersion={}, ",
+                "hellinger_dispersion={}, ",
+                "mean_text_frequency_ft={}, ",
+                "pervasiveness_pt={}, ",
+                "evenness_da={}, ",
+                "ft_adjusted_by_pt={}, ",
+                "ft_adjusted_by_da={}",
+                ")"
+            ),
+            self.range,
+            Self::fmt_opt(self.sd_population),
+            Self::fmt_opt(self.vc_population),
+            Self::fmt_opt(self.juilland_d),
+            Self::fmt_opt(self.carroll_d2),
+            Self::fmt_opt(self.roschengren_s_adj),
+            Self::fmt_opt(self.dp),
+            Self::fmt_opt(self.dp_norm),
+            Self::fmt_opt(self.kl_divergence),
+            Self::fmt_opt(self.jsd_dispersion),
+            Self::fmt_opt(self.hellinger_dispersion),
+            Self::fmt_opt(self.mean_text_frequency_ft),
+            Self::fmt_opt(self.pervasiveness_pt),
+            Self::fmt_opt(self.evenness_da),
+            Self::fmt_opt(self.ft_adjusted_by_pt),
+            Self::fmt_opt(self.ft_adjusted_by_da),
         )
+    }
+}
+
+impl DispersionMetrics {
+    fn fmt_opt(val: Option<f64>) -> String {
+        match val {
+            Some(v) => format!("{:.4}", v),
+            None => "None".to_string(),
+        }
     }
 }
