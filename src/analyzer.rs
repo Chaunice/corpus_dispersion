@@ -395,8 +395,7 @@ impl CorpusWordAnalyzer {
             "pervasiveness_pt" => analyzer.get_pervasiveness_pt(),
             _ => {
                 return Err(pyo3::exceptions::PyValueError::new_err(format!(
-                    "Unknown metric: {}",
-                    metric_name
+                    "Unknown metric: {metric_name}"
                 )))
             }
         };
