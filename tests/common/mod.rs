@@ -50,14 +50,22 @@ pub struct TestDataGenerator;
 impl TestDataGenerator {
     /// Generate test case with extreme skew
     pub fn extreme_skew() -> (Vec<f64>, Vec<f64>, f64) {
-        (vec![100.0, 0.0, 0.0, 0.0], vec![100.0, 100.0, 100.0, 100.0], 400.0)
+        (
+            vec![100.0, 0.0, 0.0, 0.0],
+            vec![100.0, 100.0, 100.0, 100.0],
+            400.0,
+        )
     }
-    
+
     /// Generate test case with perfect uniformity
     pub fn perfect_uniform() -> (Vec<f64>, Vec<f64>, f64) {
-        (vec![10.0, 10.0, 10.0, 10.0], vec![100.0, 100.0, 100.0, 100.0], 400.0)
+        (
+            vec![10.0, 10.0, 10.0, 10.0],
+            vec![100.0, 100.0, 100.0, 100.0],
+            400.0,
+        )
     }
-    
+
     /// Generate test case with single occurrence
     pub fn single_occurrence() -> (Vec<f64>, Vec<f64>, f64) {
         (vec![5.0], vec![10.0], 10.0)

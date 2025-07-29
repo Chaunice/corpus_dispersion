@@ -1,8 +1,8 @@
 //! Core analyzer implementation for corpus dispersion metrics
 
+use crate::metrics::DispersionMetrics;
 use pyo3::prelude::*;
 use std::f64::consts::LN_2;
-use crate::metrics::DispersionMetrics;
 
 #[pyclass]
 pub struct CorpusWordAnalyzer {
@@ -396,7 +396,7 @@ impl CorpusWordAnalyzer {
             _ => {
                 return Err(pyo3::exceptions::PyValueError::new_err(format!(
                     "Unknown metric: {metric_name}"
-                )))
+                )));
             }
         };
 

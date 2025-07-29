@@ -70,7 +70,7 @@ fn test_helper_functions() {
     let mut basic = create_basic_analyzer();
     let mut zero = create_zero_analyzer();
     let mut uniform = create_uniform_analyzer();
-    
+
     // Verify they create different types of analyzers
     assert!(basic.get_range() > 0);
     assert_eq!(zero.get_range(), 0);
@@ -81,7 +81,7 @@ fn test_helper_functions() {
 fn test_assert_approx_eq_helper() {
     // Test our custom assertion helper
     assert_approx_eq(1.0, 1.001, 0.01, "Should be approximately equal");
-    
+
     // This should panic, but we won't actually run it in the test
     // assert_approx_eq(1.0, 2.0, 0.01, "Should panic");
 }
@@ -91,11 +91,11 @@ fn test_data_generator() {
     let (v, sizes, total) = TestDataGenerator::extreme_skew();
     assert_eq!(v.len(), sizes.len());
     assert!(total > 0.0);
-    
+
     let (v, sizes, total) = TestDataGenerator::perfect_uniform();
     assert_eq!(v.len(), sizes.len());
     assert!(total > 0.0);
-    
+
     let (v, sizes, total) = TestDataGenerator::single_occurrence();
     assert_eq!(v.len(), 1);
     assert_eq!(sizes.len(), 1);
@@ -312,7 +312,7 @@ fn test_get_pervasiveness_pt() {
 fn test_calculate_all_metrics() {
     let mut analyzer = create_basic_analyzer();
     let metrics = analyzer.calculate_all_metrics();
-    
+
     assert_eq!(metrics.range, 3);
     assert!(metrics.sd_population.is_some());
     assert!(metrics.vc_population.is_some());
@@ -340,17 +340,17 @@ fn test_calculate_batch_metrics() {
     ];
     let corpus_part_sizes = vec![10.0, 10.0, 10.0];
     let total_corpus_words = 30.0;
-    
+
     let result = CorpusWordAnalyzer::calculate_batch_metrics(
-        frequency_matrix, 
-        corpus_part_sizes, 
-        total_corpus_words
+        frequency_matrix,
+        corpus_part_sizes,
+        total_corpus_words,
     );
-    
+
     assert!(result.is_ok());
     let metrics_vec = result.unwrap();
     assert_eq!(metrics_vec.len(), 3);
-    
+
     // Check that all metrics are computed
     for metrics in &metrics_vec {
         assert!(metrics.range > 0);
@@ -363,13 +363,13 @@ fn test_calculate_batch_metrics_empty() {
     let frequency_matrix = vec![];
     let corpus_part_sizes = vec![10.0, 10.0, 10.0];
     let total_corpus_words = 30.0;
-    
+
     let result = CorpusWordAnalyzer::calculate_batch_metrics(
-        frequency_matrix, 
-        corpus_part_sizes, 
-        total_corpus_words
+        frequency_matrix,
+        corpus_part_sizes,
+        total_corpus_words,
     );
-    
+
     assert!(result.is_ok());
     assert!(result.unwrap().is_empty());
 }
@@ -377,18 +377,18 @@ fn test_calculate_batch_metrics_empty() {
 #[test]
 fn test_calculate_batch_metrics_invalid_length() {
     let frequency_matrix = vec![
-        vec![2.0, 3.0],  // Wrong length
+        vec![2.0, 3.0], // Wrong length
         vec![1.0, 2.0, 3.0],
     ];
     let corpus_part_sizes = vec![10.0, 10.0, 10.0];
     let total_corpus_words = 30.0;
-    
+
     let result = CorpusWordAnalyzer::calculate_batch_metrics(
-        frequency_matrix, 
-        corpus_part_sizes, 
-        total_corpus_words
+        frequency_matrix,
+        corpus_part_sizes,
+        total_corpus_words,
     );
-    
+
     assert!(result.is_err());
 }
 
@@ -397,14 +397,14 @@ fn test_calculate_single_metric_juilland_d() {
     let frequency_vector = vec![2.0, 3.0, 5.0];
     let corpus_part_sizes = vec![10.0, 10.0, 10.0];
     let total_corpus_words = 30.0;
-    
+
     let result = CorpusWordAnalyzer::calculate_single_metric(
         frequency_vector,
         corpus_part_sizes,
         total_corpus_words,
-        "juilland_d"
+        "juilland_d",
     );
-    
+
     assert!(result.is_ok());
     let value = result.unwrap();
     assert!(value.is_some());
@@ -416,14 +416,14 @@ fn test_calculate_single_metric_unknown() {
     let frequency_vector = vec![2.0, 3.0, 5.0];
     let corpus_part_sizes = vec![10.0, 10.0, 10.0];
     let total_corpus_words = 30.0;
-    
+
     let result = CorpusWordAnalyzer::calculate_single_metric(
         frequency_vector,
         corpus_part_sizes,
         total_corpus_words,
-        "unknown_metric"
+        "unknown_metric",
     );
-    
+
     assert!(result.is_err());
 }
 
@@ -432,19 +432,26 @@ fn test_all_supported_single_metrics() {
     let frequency_vector = vec![2.0, 3.0, 5.0];
     let corpus_part_sizes = vec![10.0, 10.0, 10.0];
     let total_corpus_words = 30.0;
-    
+
     let metrics = [
-        "juilland_d", "carroll_d2", "dp", "dp_norm", "kl_divergence",
-        "jsd_dispersion", "hellinger_dispersion", "evenness_da",
-        "mean_text_frequency_ft", "pervasiveness_pt"
+        "juilland_d",
+        "carroll_d2",
+        "dp",
+        "dp_norm",
+        "kl_divergence",
+        "jsd_dispersion",
+        "hellinger_dispersion",
+        "evenness_da",
+        "mean_text_frequency_ft",
+        "pervasiveness_pt",
     ];
-    
+
     for metric in &metrics {
         let result = CorpusWordAnalyzer::calculate_single_metric(
             frequency_vector.clone(),
             corpus_part_sizes.clone(),
             total_corpus_words,
-            metric
+            metric,
         );
         assert!(result.is_ok(), "Failed for metric: {metric}");
         assert!(result.unwrap().is_some(), "No value for metric: {metric}");
@@ -471,7 +478,7 @@ fn test_dispersion_metrics_repr() {
         ft_adjusted_by_pt: Some(0.33),
         ft_adjusted_by_da: Some(0.25),
     };
-    
+
     // Test that we can create the struct successfully
     assert_eq!(metrics.range, 3);
     assert_eq!(metrics.juilland_d, Some(0.8));
