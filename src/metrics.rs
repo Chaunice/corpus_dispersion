@@ -85,9 +85,6 @@ impl DispersionMetrics {
 
 impl DispersionMetrics {
     fn fmt_opt(val: Option<f64>) -> String {
-        match val {
-            Some(v) => format!("{v:.4}"),
-            None => "None".to_string(),
-        }
+        val.map_or_else(|| "None".to_string(), |v| format!("{v:.4}"))
     }
 }
