@@ -7,9 +7,7 @@ use std::f64::consts::LN_2;
 #[pyclass]
 pub struct CorpusWordAnalyzer {
     v: Vec<f64>,
-    #[allow(dead_code)] // Keep for potential future use
     corpus_part_sizes_words: Vec<f64>,
-    #[allow(dead_code)] // Keep for potential future use
     total_corpus_words: f64,
     n: usize,
     f: f64,
@@ -302,6 +300,23 @@ impl CorpusWordAnalyzer {
             return None;
         }
         Some(self.get_range() as f64 / self.n as f64)
+    }
+
+    // Getter methods for original corpus data (useful for debugging and analysis)
+    pub fn get_corpus_part_sizes(&self) -> &Vec<f64> {
+        &self.corpus_part_sizes_words
+    }
+
+    pub fn get_total_corpus_words(&self) -> f64 {
+        self.total_corpus_words
+    }
+
+    pub fn get_relative_partition_sizes(&self) -> &Vec<f64> {
+        &self.s
+    }
+
+    pub fn get_normalized_frequencies(&self) -> &Vec<f64> {
+        &self.p
     }
 
     pub fn calculate_all_metrics(&mut self) -> DispersionMetrics {
