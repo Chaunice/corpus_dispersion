@@ -446,8 +446,8 @@ fn test_all_supported_single_metrics() {
             total_corpus_words,
             metric
         );
-        assert!(result.is_ok(), "Failed for metric: {}", metric);
-        assert!(result.unwrap().is_some(), "No value for metric: {}", metric);
+        assert!(result.is_ok(), "Failed for metric: {metric}");
+        assert!(result.unwrap().is_some(), "No value for metric: {metric}");
     }
 }
 

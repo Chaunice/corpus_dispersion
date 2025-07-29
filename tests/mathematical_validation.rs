@@ -18,7 +18,7 @@ fn test_mathematical_correctness_juilland_d() {
     
     let jd = analyzer.get_juilland_d().unwrap();
     // 均匀分布的 Juilland D 应该接近 1.0
-    assert!(jd > 0.9, "Uniform distribution should have high Juilland D, got {}", jd);
+    assert!(jd > 0.9, "Uniform distribution should have high Juilland D, got {jd}");
 }
 
 #[test]
@@ -31,7 +31,7 @@ fn test_mathematical_correctness_carroll_d2() {
     
     let cd2 = analyzer.get_carroll_d2().unwrap();
     // 极端不均匀分布的 Carroll D2 应该接近 0
-    assert!(cd2 < 0.5, "Highly skewed distribution should have low Carroll D2, got {}", cd2);
+    assert!(cd2 < 0.5, "Highly skewed distribution should have low Carroll D2, got {cd2}");
 }
 
 #[test]
@@ -56,7 +56,7 @@ fn test_mathematical_correctness_evenness_da() {
     
     let da = analyzer.get_evenness_da().unwrap();
     // 完全均匀分布的 evenness 应该是 1.0
-    assert!((da - 1.0).abs() < 0.001, "Perfect evenness should be 1.0, got {}", da);
+    assert!((da - 1.0).abs() < 0.001, "Perfect evenness should be 1.0, got {da}");
 }
 
 #[test]
@@ -69,7 +69,7 @@ fn test_mathematical_correctness_dp() {
     
     let dp = analyzer.get_dp().unwrap();
     // DP 值应该在 0 到 1 之间
-    assert!(dp >= 0.0 && dp <= 1.0, "DP should be between 0 and 1, got {}", dp);
+    assert!((0.0..=1.0).contains(&dp), "DP should be between 0 and 1, got {dp}");
     
     // 手动计算验证
     // v_i/f = [10/60, 20/60, 30/60] = [1/6, 1/3, 1/2]
@@ -77,7 +77,7 @@ fn test_mathematical_correctness_dp() {
     // |v_i/f - s_i| = [|1/6 - 1/3|, |1/3 - 1/3|, |1/2 - 1/3|] = [1/6, 0, 1/6]
     // DP = 0.5 * (1/6 + 0 + 1/6) = 0.5 * 1/3 = 1/6 ≈ 0.1667
     let expected_dp = 1.0 / 6.0;
-    assert!((dp - expected_dp).abs() < 0.001, "DP calculation incorrect, expected {}, got {}", expected_dp, dp);
+    assert!((dp - expected_dp).abs() < 0.001, "DP calculation incorrect, expected {expected_dp}, got {dp}");
 }
 
 #[test]
@@ -90,7 +90,7 @@ fn test_mathematical_correctness_pervasiveness() {
     
     let pt = analyzer.get_pervasiveness_pt().unwrap();
     // 3 个非零频率 / 5 个部分 = 0.6
-    assert!((pt - 0.6).abs() < 0.001, "Pervasiveness calculation incorrect, expected 0.6, got {}", pt);
+    assert!((pt - 0.6).abs() < 0.001, "Pervasiveness calculation incorrect, expected 0.6, got {pt}");
 }
 
 #[test]
@@ -105,7 +105,7 @@ fn test_mathematical_correctness_standard_deviation() {
     // 手动计算：mean = 4, variance = ((2-4)^2 + (4-4)^2 + (6-4)^2) / 3 = (4 + 0 + 4) / 3 = 8/3
     // sd = sqrt(8/3) ≈ 1.633
     let expected_sd = (8.0_f64 / 3.0_f64).sqrt();
-    assert!((sd - expected_sd).abs() < 0.001, "Standard deviation calculation incorrect, expected {}, got {}", expected_sd, sd);
+    assert!((sd - expected_sd).abs() < 0.001, "Standard deviation calculation incorrect, expected {expected_sd}, got {sd}");
 }
 
 #[test]
@@ -121,7 +121,7 @@ fn test_mathematical_correctness_coefficient_of_variation() {
     let mean = 2.0; // (1+2+3)/3 = 2
     
     let expected_vc = sd / mean;
-    assert!((vc - expected_vc).abs() < 0.001, "Coefficient of variation calculation incorrect, expected {}, got {}", expected_vc, vc);
+    assert!((vc - expected_vc).abs() < 0.001, "Coefficient of variation calculation incorrect, expected {expected_vc}, got {vc}");
 }
 
 #[test]
@@ -173,7 +173,7 @@ fn test_mathematical_correctness_roschengren_s_adj() {
     //          = 2/√14 + 6/√14 + 12/√14 = 20/√14
     // S_adj = (20/√14)^2 / 29 = 400/14 / 29 = 400/(14*29)
     let expected = 400.0 / (14.0 * 29.0);
-    assert!((s_adj - expected).abs() < 0.001, "Roschengren S calculation incorrect, expected {}, got {}", expected, s_adj);
+    assert!((s_adj - expected).abs() < 0.001, "Roschengren S calculation incorrect, expected {expected}, got {s_adj}");
 }
 
 #[test]
@@ -191,7 +191,7 @@ fn test_mathematical_correctness_dp_norm() {
     // dp_norm = dp / (1 - 1/6) = dp / (5/6) = dp * 6/5
     let min_s = 5.0 / 30.0;
     let expected_dp_norm = dp / (1.0 - min_s);
-    assert!((dp_norm - expected_dp_norm).abs() < 0.001, "DP norm calculation incorrect, expected {}, got {}", expected_dp_norm, dp_norm);
+    assert!((dp_norm - expected_dp_norm).abs() < 0.001, "DP norm calculation incorrect, expected {expected_dp_norm}, got {dp_norm}");
 }
 
 #[test]
@@ -210,7 +210,7 @@ fn test_mathematical_correctness_kl_divergence() {
     //    = 1/6 * log2(1/2) + 1/3 * log2(1) + 1/2 * log2(3/2)
     //    = 1/6 * (-1) + 1/3 * 0 + 1/2 * log2(1.5)
     let expected_kl = -1.0/6.0 + 0.0 + 0.5 * (1.5_f64.log2());
-    assert!((kl - expected_kl).abs() < 0.001, "KL divergence calculation incorrect, expected {}, got {}", expected_kl, kl);
+    assert!((kl - expected_kl).abs() < 0.001, "KL divergence calculation incorrect, expected {expected_kl}, got {kl}");
 }
 
 #[test]
@@ -223,13 +223,13 @@ fn test_mathematical_correctness_jsd_dispersion() {
     
     let jsd = analyzer.get_jsd_dispersion().unwrap();
     // JSD 应该在 0-1 之间，且对于不同分布应该 > 0
-    assert!(jsd > 0.0 && jsd <= 1.0, "JSD dispersion should be between 0 and 1, got {}", jsd);
+    assert!(jsd > 0.0 && jsd <= 1.0, "JSD dispersion should be between 0 and 1, got {jsd}");
     
     // 测试完全相同分布的 JSD 应该接近 1
     let v_uniform = vec![4.0, 4.0, 4.0];
     let analyzer_uniform = CorpusWordAnalyzer::new(v_uniform, sizes, total).unwrap();
     let jsd_uniform = analyzer_uniform.get_jsd_dispersion().unwrap();
-    assert!(jsd_uniform > 0.99, "JSD for identical distributions should be close to 1, got {}", jsd_uniform);
+    assert!(jsd_uniform > 0.99, "JSD for identical distributions should be close to 1, got {jsd_uniform}");
 }
 
 #[test]
@@ -242,13 +242,13 @@ fn test_mathematical_correctness_hellinger_dispersion() {
     
     let hellinger = analyzer.get_hellinger_dispersion().unwrap();
     // Hellinger 散度应该在 0-1 之间
-    assert!(hellinger >= 0.0 && hellinger <= 1.0, "Hellinger dispersion should be between 0 and 1, got {}", hellinger);
+    assert!((0.0..=1.0).contains(&hellinger), "Hellinger dispersion should be between 0 and 1, got {hellinger}");
     
     // 测试完全相同分布的 Hellinger 应该接近 1
     let v_uniform = vec![4.0, 4.0, 4.0];
     let analyzer_uniform = CorpusWordAnalyzer::new(v_uniform, sizes, total).unwrap();
     let hellinger_uniform = analyzer_uniform.get_hellinger_dispersion().unwrap();
-    assert!(hellinger_uniform > 0.99, "Hellinger for identical distributions should be close to 1, got {}", hellinger_uniform);
+    assert!(hellinger_uniform > 0.99, "Hellinger for identical distributions should be close to 1, got {hellinger_uniform}");
 }
 
 #[test]
@@ -264,7 +264,7 @@ fn test_mathematical_correctness_mean_text_frequency() {
     // p = [3/10, 6/20, 9/30] = [0.3, 0.3, 0.3]
     // mean_p = (0.3 + 0.3 + 0.3) / 3 = 0.3
     let expected_ft = 0.3;
-    assert!((ft - expected_ft).abs() < 0.001, "Mean text frequency calculation incorrect, expected {}, got {}", expected_ft, ft);
+    assert!((ft - expected_ft).abs() < 0.001, "Mean text frequency calculation incorrect, expected {expected_ft}, got {ft}");
 }
 
 #[test]
