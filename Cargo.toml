@@ -1,6 +1,6 @@
 [package]
 name = "corpus_dispersion"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2024"
 authors = ["Haobo Zhang <chaunice@163.com>"]
 description = "A high-performance Python extension (wheel) for advanced lexical dispersion metrics, powered by Rust and PyO3."
