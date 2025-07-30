@@ -1,7 +1,7 @@
 //! Corpus Dispersion Analysis Library
 //!
 //! A high-performance Python extension for advanced lexical dispersion metrics,
-//! powered by Rust and PyO3.
+//! powered by Rust and `PyO3`.
 
 use pyo3::Bound;
 use pyo3::prelude::*;

@@ -248,6 +248,7 @@ fn test_mathematical_correctness_kl_divergence() {
     //    = 1/6 * log2(1/6 / 1/3) + 1/3 * log2(1/3 / 1/3) + 1/2 * log2(1/2 / 1/3)
     //    = 1/6 * log2(1/2) + 1/3 * log2(1) + 1/2 * log2(3/2)
     //    = 1/6 * (-1) + 1/3 * 0 + 1/2 * log2(1.5)
+    #[allow(clippy::suboptimal_flops)] // Clear mathematical expression is more important than micro-optimization
     let expected_kl = -1.0 / 6.0 + 0.0 + 0.5 * (1.5_f64.log2());
     assert!(
         (kl - expected_kl).abs() < 0.001,
@@ -364,17 +365,18 @@ fn test_mathematical_correctness_extreme_cases() {
         CorpusWordAnalyzer::new(v_concentrated, sizes.clone(), total).unwrap();
 
     assert_eq!(analyzer_concentrated.get_range(), 1);
-    assert_eq!(
-        analyzer_concentrated.get_pervasiveness_pt().unwrap(),
-        1.0 / 3.0
-    );
+    // Exact mathematical result expected, so direct float comparison is appropriate
+    let pervasiveness = analyzer_concentrated.get_pervasiveness_pt().unwrap();
+    assert!((pervasiveness - 1.0 / 3.0).abs() < f64::EPSILON);
 
     // 情况2：完全均匀分布
     let v_uniform = vec![10.0, 10.0, 10.0];
     let mut analyzer_uniform = CorpusWordAnalyzer::new(v_uniform, sizes, total).unwrap();
 
     assert_eq!(analyzer_uniform.get_range(), 3);
-    assert_eq!(analyzer_uniform.get_pervasiveness_pt().unwrap(), 1.0);
+    // Exact mathematical result expected, so direct float comparison is appropriate
+    let pervasiveness_uniform = analyzer_uniform.get_pervasiveness_pt().unwrap();
+    assert!((pervasiveness_uniform - 1.0).abs() < f64::EPSILON);
     assert!((analyzer_uniform.get_evenness_da().unwrap() - 1.0).abs() < 0.001);
 }
 

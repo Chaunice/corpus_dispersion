@@ -4,16 +4,22 @@ use crate::metrics::DispersionMetrics;
 use pyo3::prelude::*;
 use std::f64::consts::LN_2;
 
+/// Analyzer for computing lexical dispersion metrics from corpus word frequencies
 #[pyclass]
 pub struct CorpusWordAnalyzer {
+    /// Word frequency vector across partitions
     v: Vec<f64>,
-    #[allow(dead_code)] // Keep for potential future use
+    /// Corpus partition sizes in words
     corpus_part_sizes_words: Vec<f64>,
-    #[allow(dead_code)] // Keep for potential future use
+    /// Total corpus size in words
     total_corpus_words: f64,
+    /// Number of partitions
     n: usize,
+    /// Total frequency of the word
     f: f64,
+    /// Relative partition sizes (s vector)
     s: Vec<f64>,
+    /// Normalized frequencies (p vector)
     p: Vec<f64>,
     // Cached values for efficiency
     cached_range: Option<i32>,
@@ -25,7 +31,22 @@ pub struct CorpusWordAnalyzer {
 
 #[pymethods]
 impl CorpusWordAnalyzer {
+    /// Create a new corpus word analyzer
+    ///
+    /// # Arguments
+    ///
+    /// * `v` - Word frequency vector across partitions
+    /// * `corpus_part_sizes_words` - Number of words in each partition
+    /// * `total_corpus_words` - Total number of words in corpus
+    ///
+    /// # Errors
+    ///
+    /// Returns `PyValueError` if:
+    /// - Input vectors have different lengths
+    /// - Input vectors are empty
+    /// - Total corpus words is not positive
     #[new]
+    #[allow(clippy::many_single_char_names)] // Mathematical notation is standard in corpus linguistics
     pub fn new(
         v: Vec<f64>,
         corpus_part_sizes_words: Vec<f64>,
@@ -64,7 +85,7 @@ impl CorpusWordAnalyzer {
             .map(|(&freq, &size)| if size > 0.0 { freq / size } else { 0.0 })
             .collect();
 
-        Ok(CorpusWordAnalyzer {
+        Ok(Self {
             v,
             corpus_part_sizes_words,
             total_corpus_words,
@@ -81,15 +102,18 @@ impl CorpusWordAnalyzer {
     }
 
     // Optimized range calculation with caching
+    #[allow(clippy::cast_possible_truncation, clippy::cast_possible_wrap)]
     pub fn get_range(&mut self) -> i32 {
         if let Some(range) = self.cached_range {
             return range;
         }
+        // Safe cast: corpus partitions are typically small (< i32::MAX)
         let range = self.v.iter().filter(|&&x| x > 0.0).count() as i32;
         self.cached_range = Some(range);
         range
     }
 
+    #[allow(clippy::cast_precision_loss)] // Acceptable for typical corpus sizes
     pub fn get_sd_population(&mut self) -> Option<f64> {
         if self.n == 0 {
             return None;
@@ -110,6 +134,7 @@ impl CorpusWordAnalyzer {
         self.get_sd_population().map(|sd| sd / mean_v)
     }
 
+    #[allow(clippy::cast_precision_loss)] // Acceptable for typical corpus sizes
     pub fn get_juilland_d(&mut self) -> Option<f64> {
         if self.n <= 1 {
             return Some(if self.f > 0.0 { 1.0 } else { 0.0 });
@@ -131,6 +156,7 @@ impl CorpusWordAnalyzer {
         Some(1.0 - vc_p / ((self.n - 1) as f64).sqrt())
     }
 
+    #[allow(clippy::cast_precision_loss)] // Acceptable for typical corpus sizes
     pub fn get_carroll_d2(&mut self) -> Option<f64> {
         if self.n <= 1 {
             return Some(if self.f > 0.0 { 1.0 } else { 0.0 });
@@ -159,6 +185,7 @@ impl CorpusWordAnalyzer {
         Some(entropy / (log2_n * LN_2))
     }
 
+    #[must_use]
     pub fn get_roschengren_s_adj(&self) -> Option<f64> {
         if self.f == 0.0 {
             return Some(0.0);
@@ -172,6 +199,7 @@ impl CorpusWordAnalyzer {
         Some((sum_sqrt * sum_sqrt) / self.f)
     }
 
+    #[must_use]
     pub fn get_dp(&self) -> Option<f64> {
         if self.f == 0.0 {
             return Some(0.0);
@@ -197,6 +225,7 @@ impl CorpusWordAnalyzer {
         Some(dp / denom)
     }
 
+    #[must_use]
     pub fn get_kl_divergence(&self) -> Option<f64> {
         if self.f == 0.0 {
             return Some(0.0);
@@ -212,6 +241,7 @@ impl CorpusWordAnalyzer {
         Some(kl)
     }
 
+    #[allow(clippy::cast_precision_loss)] // Acceptable for typical corpus sizes
     pub fn get_evenness_da(&mut self) -> Option<f64> {
         if self.n == 0 {
             return None;
@@ -247,6 +277,8 @@ impl CorpusWordAnalyzer {
         Some(da.clamp(0.0, 1.0))
     }
 
+    #[must_use]
+    #[allow(clippy::similar_names)] // Mathematical notation standard in literature
     pub fn get_jsd_dispersion(&self) -> Option<f64> {
         if self.f == 0.0 {
             return Some(0.0);
@@ -275,6 +307,7 @@ impl CorpusWordAnalyzer {
         Some(1.0 - (jsd / LN_2).min(1.0))
     }
 
+    #[must_use]
     pub fn get_hellinger_dispersion(&self) -> Option<f64> {
         if self.f == 0.0 {
             return Some(0.0);
@@ -297,11 +330,33 @@ impl CorpusWordAnalyzer {
         Some(self.get_mean_p())
     }
 
+    #[allow(clippy::cast_lossless, clippy::cast_precision_loss)] // Acceptable conversions
     pub fn get_pervasiveness_pt(&mut self) -> Option<f64> {
         if self.n == 0 {
             return None;
         }
-        Some(self.get_range() as f64 / self.n as f64)
+        Some(f64::from(self.get_range()) / self.n as f64)
+    }
+
+    // Getter methods for original corpus data (useful for debugging and analysis)
+    #[must_use]
+    pub const fn get_corpus_part_sizes(&self) -> &Vec<f64> {
+        &self.corpus_part_sizes_words
+    }
+
+    #[must_use]
+    pub const fn get_total_corpus_words(&self) -> f64 {
+        self.total_corpus_words
+    }
+
+    #[must_use]
+    pub const fn get_relative_partition_sizes(&self) -> &Vec<f64> {
+        &self.s
+    }
+
+    #[must_use]
+    pub const fn get_normalized_frequencies(&self) -> &Vec<f64> {
+        &self.p
     }
 
     pub fn calculate_all_metrics(&mut self) -> DispersionMetrics {
@@ -335,8 +390,22 @@ impl CorpusWordAnalyzer {
         }
     }
 
+    /// Calculate metrics for multiple words using parallel processing
+    ///
+    /// # Arguments
+    ///
+    /// * `frequency_matrix` - Matrix where each row is a word's frequency vector
+    /// * `corpus_part_sizes` - Partition sizes (same for all words)
+    /// * `total_corpus_words` - Total corpus size
+    ///
+    /// # Errors
+    ///
+    /// Returns `PyValueError` if:
+    /// - Matrix rows have inconsistent lengths
+    /// - Input validation fails for any word
     // Enhanced batch processing with better memory management
     #[staticmethod]
+    #[allow(clippy::needless_pass_by_value)] // PyO3 requires owned Vec for Python bindings
     pub fn calculate_batch_metrics(
         frequency_matrix: Vec<Vec<f64>>,
         corpus_part_sizes: Vec<f64>,
@@ -364,13 +433,27 @@ impl CorpusWordAnalyzer {
         frequency_matrix
             .into_par_iter()
             .map(|v: Vec<f64>| {
-                let mut analyzer: CorpusWordAnalyzer =
-                    CorpusWordAnalyzer::new(v, corpus_part_sizes.clone(), total_corpus_words)?;
+                let mut analyzer: Self =
+                    Self::new(v, corpus_part_sizes.clone(), total_corpus_words)?;
                 Ok(analyzer.calculate_all_metrics())
             })
             .collect()
     }
 
+    /// Calculate a single metric without full analyzer initialization
+    ///
+    /// # Arguments
+    ///
+    /// * `frequency_vector` - Word frequencies per partition
+    /// * `corpus_part_sizes` - Partition sizes
+    /// * `total_corpus_words` - Total corpus size
+    /// * `metric_name` - Name of the metric to compute
+    ///
+    /// # Errors
+    ///
+    /// Returns `PyValueError` if:
+    /// - Metric name is unknown
+    /// - Input validation fails
     // Additional utility method for single metric calculation
     #[staticmethod]
     pub fn calculate_single_metric(
@@ -380,7 +463,7 @@ impl CorpusWordAnalyzer {
         metric_name: &str,
     ) -> PyResult<Option<f64>> {
         let mut analyzer =
-            CorpusWordAnalyzer::new(frequency_vector, corpus_part_sizes, total_corpus_words)?;
+            Self::new(frequency_vector, corpus_part_sizes, total_corpus_words)?;
 
         let result = match metric_name {
             "juilland_d" => analyzer.get_juilland_d(),
@@ -407,6 +490,7 @@ impl CorpusWordAnalyzer {
 // Helper methods implementation
 impl CorpusWordAnalyzer {
     // Helper method to get cached mean_v
+    #[allow(clippy::cast_precision_loss)] // Acceptable for typical corpus sizes
     fn get_mean_v(&mut self) -> f64 {
         if let Some(mean) = self.cached_mean_v {
             return mean;
@@ -417,6 +501,7 @@ impl CorpusWordAnalyzer {
     }
 
     // Helper method to get cached mean_p
+    #[allow(clippy::cast_precision_loss)] // Acceptable for typical corpus sizes
     fn get_mean_p(&mut self) -> f64 {
         if let Some(mean) = self.cached_mean_p {
             return mean;
@@ -441,7 +526,7 @@ impl CorpusWordAnalyzer {
         if let Some(min_s) = self.cached_min_s {
             return min_s;
         }
-        let min_s = self.s.iter().cloned().fold(f64::INFINITY, f64::min);
+        let min_s = self.s.iter().copied().fold(f64::INFINITY, f64::min);
         self.cached_min_s = Some(min_s);
         min_s
     }

@@ -309,6 +309,22 @@ class CorpusWordAnalyzer:
         """Get pervasiveness (PT) - proportion of partitions with the word."""
         ...
 
+    def get_corpus_part_sizes(self) -> List[float]:
+        """Get the original corpus partition sizes."""
+        ...
+
+    def get_total_corpus_words(self) -> float:
+        """Get the total corpus word count."""
+        ...
+
+    def get_relative_partition_sizes(self) -> List[float]:
+        """Get the relative partition sizes (s vector)."""
+        ...
+
+    def get_normalized_frequencies(self) -> List[float]:
+        """Get the normalized frequencies (p vector)."""
+        ...
+
     def calculate_all_metrics(self) -> DispersionMetrics:
         """Calculate and return all dispersion metrics."""
         ...
