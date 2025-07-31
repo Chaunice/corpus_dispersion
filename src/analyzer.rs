@@ -462,8 +462,7 @@ impl CorpusWordAnalyzer {
         total_corpus_words: f64,
         metric_name: &str,
     ) -> PyResult<Option<f64>> {
-        let mut analyzer =
-            Self::new(frequency_vector, corpus_part_sizes, total_corpus_words)?;
+        let mut analyzer = Self::new(frequency_vector, corpus_part_sizes, total_corpus_words)?;
 
         let result = match metric_name {
             "juilland_d" => analyzer.get_juilland_d(),

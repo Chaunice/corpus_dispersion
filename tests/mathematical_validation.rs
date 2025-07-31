@@ -248,7 +248,8 @@ fn test_mathematical_correctness_kl_divergence() {
     //    = 1/6 * log2(1/6 / 1/3) + 1/3 * log2(1/3 / 1/3) + 1/2 * log2(1/2 / 1/3)
     //    = 1/6 * log2(1/2) + 1/3 * log2(1) + 1/2 * log2(3/2)
     //    = 1/6 * (-1) + 1/3 * 0 + 1/2 * log2(1.5)
-    #[allow(clippy::suboptimal_flops)] // Clear mathematical expression is more important than micro-optimization
+    #[allow(clippy::suboptimal_flops)]
+    // Clear mathematical expression is more important than micro-optimization
     let expected_kl = -1.0 / 6.0 + 0.0 + 0.5 * (1.5_f64.log2());
     assert!(
         (kl - expected_kl).abs() < 0.001,
